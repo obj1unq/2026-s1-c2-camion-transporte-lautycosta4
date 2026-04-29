@@ -1,5 +1,5 @@
 import cosas.*
-
+import lugares.*
 object camion {
 	const property cosas = #{}
 //Poder cargar una cosa, y también descargar una cosa.  
@@ -100,6 +100,12 @@ const pesoMaximoAceptable=2500
 	method accidentarse() {
 		cosas.forEach({cosa => cosa.accidente()})
 	}
-
+	method transportar(destino, camino){
+			camino.validarCamino(self)
+			destino.almacenarCosas(cosas)
+			cosas.clear()
+	}
 
 }
+
+
