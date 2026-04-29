@@ -259,3 +259,181 @@ describe "embalaje y contenedor" {
     assert.equals(7.5,embalajeSeguridad.nivelPeligrosidad())
   }
 }
+/*
+Para un camión cargado con Bumblebee y un paquete de 300 ladrillos:
+- Tiene algo que pesa entre 5 y 700.
+- Tiene algo que pesa entre 5 y 1000.
+- No tiene algo que pese entre 900 y 1000.
+*/
+describe "pesos entre valores" {
+  test "tiene algo que pesa entre 5 y 700" {
+    camion.cargar(bumblebee)
+    paqueteDeLadrillos.cantidadLadrillos(300)
+    camion.cargar(paqueteDeLadrillos)
+    assert.equals(true,camion.tieneCosaQuePesaEntreyEntre(5,700))
+  }
+  test "tiene algo que pesa entre 5 y 1000" {
+    camion.cargar(bumblebee)
+    paqueteDeLadrillos.cantidadLadrillos(300)
+    camion.cargar(paqueteDeLadrillos)
+    assert.equals(true,camion.tieneCosaQuePesaEntreyEntre(5,1000))    
+  }
+  test "no tiene algo que pesa entre 900 y 1000" {
+    camion.cargar(bumblebee)
+    paqueteDeLadrillos.cantidadLadrillos(300)
+    camion.cargar(paqueteDeLadrillos)
+    assert.equals(false,camion.tieneCosaQuePesaEntreyEntre(900,1000))    
+  }
+}
+/*
+- Para un camión cargado con Bumblebee y un paquete de 300 ladrillos, la 
+  cosa más pesada es Bumblebee.
+- Para un camión vacío, no se puede calcular la cosa más pesada.
+*/
+describe "cosas pesadas" {
+  test "cosa mas pesada bumblebee" {
+    camion.cargar(bumblebee)
+    paqueteDeLadrillos.cantidadLadrillos(300)
+    camion.cargar(paqueteDeLadrillos)
+    assert.equals(bumblebee,camion.cosaMasPesadaDelCamion())
+  }
+  test "cosa mas pesada camion vacio" {
+    assert.throwsException({camion.cosaMasPesadaDelCamion()})
+  }
+}
+/*
+- Para un camión cargado con Bumblebee y un paquete de 300 ladrillos, los pesos son 800 y 600.  
+  Nota: ojo al armar el test, porque para Wollok [800,600] es distinto a [600,800]. 
+  A nivel de negocio da igual.
+*/
+describe "pesos cosas" {
+  test "pesos de bumblebee y ladrillos(300)" {
+    camion.cargar(bumblebee)
+    paqueteDeLadrillos.cantidadLadrillos(300)
+    camion.cargar(paqueteDeLadrillos)
+    assert.equals([800,600],camion.pesosCosas())
+  }
+}
+/*
+##### Caso 1
+Suponiendo que el camión tiene:
+- El contenedor portuario con Knight Rider y Bumblebee.
+- El embalaje de seguridad envolviendo los residuos radiactivos.
+- Arena a granel.
+- Un paquete de 50 ladrillos.
+- La batería antiaérea descargada.  
+Entonces la cantidad de bultos es: 9.
+
+##### Caso 2
+Si el camión tiene:
+- Un paquete de 150 ladrillos.
+- La batería antiaérea cargada.
+- Un contenedor portuario vacío.  
+Entonces la cantidad de bultos es 5.
+
+##### Caso 3
+Si el camión tiene:
+- Un paquete de 350 ladrillos.
+- Arena a granel.  
+Entonces la cantidad de bultos es 4.
+*/
+describe "bultos" {
+  test "caso 1. 9 bultos" {
+    contenedorPortuario.guardarCosa(knightRider)
+    contenedorPortuario.guardarCosa(bumblebee)
+    embalajeSeguridad.envolverCosa(residuosRadiactivos)
+    camion.cargar(contenedorPortuario)
+    camion.cargar(embalajeSeguridad)
+    camion.cargar(arenaGranel)
+    paqueteDeLadrillos.cantidadLadrillos(50)
+    camion.cargar(paqueteDeLadrillos)
+    bateriaAntiaerea.noLlevarMisiles()
+    camion.cargar(bateriaAntiaerea)
+    assert.equals(9,camion.totalBultos())    
+  }
+  test "caso 2. 5 bultos" {
+    paqueteDeLadrillos.cantidadLadrillos(150)
+    camion.cargar(paqueteDeLadrillos)
+    bateriaAntiaerea.llevarMisiles()
+    camion.cargar(bateriaAntiaerea)    
+    camion.cargar(contenedorPortuario)
+    assert.equals(5,camion.totalBultos())
+  }
+  test "caso 3. 4 bultos" {
+    paqueteDeLadrillos.cantidadLadrillos(350)
+    camion.cargar(paqueteDeLadrillos)
+    camion.cargar(arenaGranel)
+    assert.equals(4,camion.totalBultos())
+  }
+}
+/*
+##### Caso 1
+Suponiendo que el camión tiene:
+- El contenedor portuario con Knight Rider y Bumblebee en modo auto.
+- El embalaje de seguridad envolviendo 30 kg de residuos radiactivos. 
+- 50 kg de arena a granel.
+- Un paquete de 100 ladrillos.
+- La batería antiaérea cargada.  
+
+Al producirse un accidente:
+- Bumblebee queda en modo robot.
+- Residuos radiactivos quedan con 30 kg de peso.
+- La arena queda con 70 kg.
+- El paquete de ladrillos queda con 88 ladrillos.
+- La batería antiaérea queda descargada.
+
+##### Caso 2
+Suponiendo que el camión tiene:
+- Bumblebee en modo robot.
+- 30 kg de residuos radiactivos. 
+- Un paquete de 10 ladrillos.
+- La batería antiaérea descargada.  
+
+Al producirse un accidente:
+- Bumblebee queda en modo auto.
+- Residuos radiactivos quedan con 45 kg de peso.
+- El paquete de ladrillos queda con 0 ladrillos.
+- La batería antiaérea queda descargada.
+
+*/
+
+describe "accidentes" {
+  test "caso 1. Bumblebee en modo robot, residuos con 30kg, arena con 70kg, 
+  paquete de ladrillos con 88 ladrillos y bateria descargada" {
+    contenedorPortuario.guardarCosa(knightRider)
+    bumblebee.transformarEnAuto()
+    contenedorPortuario.guardarCosa(bumblebee)
+    residuosRadiactivos.peso(30)
+    embalajeSeguridad.envolverCosa(residuosRadiactivos)
+    arenaGranel.peso(50)
+    paqueteDeLadrillos.cantidadLadrillos(100)
+    camion.cargar(contenedorPortuario)
+    camion.cargar(embalajeSeguridad)
+    camion.cargar(arenaGranel)
+    camion.cargar(paqueteDeLadrillos)
+    bateriaAntiaerea.llevarMisiles()
+    camion.cargar(bateriaAntiaerea)
+    camion.accidentarse()
+    assert.equals(true, bumblebee.esRobot())
+    assert.equals(30, residuosRadiactivos.peso())
+    assert.equals(70, arenaGranel.peso())
+    assert.equals(88, paqueteDeLadrillos.cantidadLadrillos())
+    assert.equals(false, bateriaAntiaerea.tieneMisiles())
+    }
+    test "caso 2. bumblebee en auto, residuos con 45kg, paquete de ladrillos con 0 ladrillos,
+    bateria antiaerea descargada " {
+      bumblebee.transformarEnRobot()
+      residuosRadiactivos.peso(30)
+      paqueteDeLadrillos.cantidadLadrillos(10)
+      bateriaAntiaerea.noLlevarMisiles()
+      camion.cargar(bumblebee)
+      camion.cargar(residuosRadiactivos)
+      camion.cargar(paqueteDeLadrillos)
+      camion.cargar(bateriaAntiaerea)
+      camion.accidentarse()
+      assert.equals(false, bumblebee.esRobot())
+      assert.equals(45, residuosRadiactivos.peso())
+      assert.equals(0, paqueteDeLadrillos.cantidadLadrillos())
+      assert.equals(false, bateriaAntiaerea.tieneMisiles()) 
+    }
+}

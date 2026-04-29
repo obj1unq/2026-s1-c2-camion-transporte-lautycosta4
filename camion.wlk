@@ -74,5 +74,32 @@ const pesoMaximoAceptable=2500
 		return !self.estaExcedido() && 
 		self.cosasConMasPeligrosidadQue(nivelMaximoPeligrosidad).isEmpty() 
 	}
+//Saber si el camión tiene algo que pesa entre dos valores (mínimo y máximo).
+	method tieneCosaQuePesaEntreyEntre(pesoMinimo,pesoMaximo) {
+	  return cosas.any({cosa => cosa.peso() >= pesoMinimo && cosa.peso() <= pesoMaximo})
+	}
+//La cosa más pesada que tenga el camión. Ojo que lo que se pide es _la cosa_ y no su peso.
+	method cosaMasPesadaDelCamion() {
+		self.validarCamionConCargas()
+	  return cosas.max({cosa => cosa.peso()})
+	}
+	method validarCamionConCargas() {
+		if (cosas.isEmpty()) {
+			self.error("El camión no tiene cargas para evaluar.")
+		}
+	}
+//Saber todos los pesos de las cosas que tiene el camión.
+	method pesosCosas() {
+		return cosas.map({cosa => cosa.peso()})
+	}
+//Se pide saber la cantidad total de bultos que está transportando el camión.
+	method totalBultos() {
+	  return cosas.sum({cosa => cosa.bulto()})
+	}
+//Se pide modelar que un camión sufre un accidente, aplicando los efectos a las cosas cargadas.
+	method accidentarse() {
+		cosas.forEach({cosa => cosa.accidente()})
+	}
+
 
 }
