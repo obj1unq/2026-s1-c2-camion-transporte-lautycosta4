@@ -226,4 +226,36 @@ describe "puede circular en ruta" {
     assert.equals(false,camion.puedeCircularRuta(20))    
   }
   }  
-
+/*
+- El contenedor portuario vacío pesa 100 y su peligrosidad es 0.
+- El contenedor portuario que tiene a Knight Rider y 50 kg de arena a granel 
+    pesa 650 y su peligrosidad es 10.
+- Si el embalaje de seguridad envuelve a Knight Rider, su peso es 500 y su 
+    peligrosidad es 5.
+- Si el embalaje de seguridad envuelve a Bumblebee en modo auto, su peso es 
+    800 y su peligrosidad 7,5.
+*/
+describe "embalaje y contenedor" {
+  test "contenedor vacio" {
+    assert.equals(100,contenedorPortuario.peso())
+    assert.equals(0,contenedorPortuario.nivelPeligrosidad())
+  }
+  test "contenedor con knight rider y arena(50kg)" {
+    contenedorPortuario.guardarCosa(knightRider)
+    arenaGranel.peso(50)
+    contenedorPortuario.guardarCosa(arenaGranel)
+    assert.equals(650,contenedorPortuario.peso())
+    assert.equals(10,contenedorPortuario.nivelPeligrosidad())
+  }
+  test "embalaje con knight rider" {
+    embalajeSeguridad.envolverCosa(knightRider)
+    assert.equals(500,embalajeSeguridad.peso())
+    assert.equals(5,embalajeSeguridad.nivelPeligrosidad())
+  }
+  test "embalaje con bumblebee en auto" {
+    bumblebee.transformarEnAuto()
+    embalajeSeguridad.envolverCosa(bumblebee)
+    assert.equals(800,embalajeSeguridad.peso())
+    assert.equals(7.5,embalajeSeguridad.nivelPeligrosidad())
+  }
+}

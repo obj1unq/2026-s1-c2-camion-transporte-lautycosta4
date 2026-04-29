@@ -63,3 +63,37 @@ object residuosRadiactivos {
 
 	method nivelPeligrosidad(){return 200}
 }
+
+
+/* Contenedor portuario: un contenedor puede tener otras cosas adentro. 
+	El peso es 100 + la suma de todas las cosas que estén adentro. 
+	Es tan peligroso como el objeto más peligroso que contiene. 
+	Si está vacío, su peligrosidad es 0.
+*/ 
+object contenedorPortuario {
+  const cosasAdentro = #{}
+  const pesoBaseContenedor=100
+	method peso(){return pesoBaseContenedor + cosasAdentro.sum({cosa => cosa.peso()})}
+	method nivelPeligrosidad(){return
+		if(cosasAdentro.isEmpty()){
+			0
+		} else cosasAdentro.max({cosa => cosa.nivelPeligrosidad()}).nivelPeligrosidad()
+	}
+	method guardarCosa(cosa){
+		cosasAdentro.add(cosa)
+	}
+
+}
+
+/*Embalaje de seguridad: es una cobertura que envuelve a cualquier otra cosa. 
+	El peso es el peso de la cosa que tenga adentro. 
+	El nivel de peligrosidad es la mitad del nivel de peligrosidad de lo que envuelve.
+*/
+object embalajeSeguridad {
+	var cosaEmbalada = null
+	method peso(){return cosaEmbalada.peso()}
+	method nivelPeligrosidad(){return cosaEmbalada.nivelPeligrosidad()/2}
+	method envolverCosa(cosa){
+		cosaEmbalada = cosa
+	} 
+}
