@@ -47,4 +47,32 @@ const pesoMaximoAceptable=2500
 		return self.pesoTotalCamion() > pesoMaximoAceptable
 	}
 
+//Encontrar una cosa cargada cuyo nivel de peligrosidad 
+//coincida exactamente con el valor indicado.
+	method cosaConNivelPeligrosidad(nivelAEncontrar){
+		self.validarNivelPeligrosidad(nivelAEncontrar)
+		return cosas.find({cosa => cosa.nivelPeligrosidad() == nivelAEncontrar})
+	}
+	method validarNivelPeligrosidad(nivelAEncontrar){
+		if (!cosas.any { cosa => cosa.nivelPeligrosidad() == nivelAEncontrar }) {
+        self.error("No hay ninguna cosa con nivel de peligrosidad " + nivelAEncontrar)
+    }
+	}
+	//- Cosas cargadas que estén en el camión que superen cierto nivel de peligrosidad.
+	method cosasConMasPeligrosidadQue(nivelAIgualar){
+		return cosas.filter({cosa => cosa.nivelPeligrosidad() > nivelAIgualar})
+	}
+	//- Cosas cargadas que estén en el camión que sean más peligrosas que otra cosa indicada.
+	method cosasMasPeligrosaQueOtraCosa(otraCosa){
+		return cosas.filter({cosa => cosa.nivelPeligrosidad() > otraCosa.nivelPeligrosidad()})
+	}
+	/*
+	Saber si el camión puede circular en ruta, lo que ocurre si no está excedido de peso y, 
+	además, ninguno de los objetos cargados supera el nivel máximo de peligrosidad indicado.
+	*/
+	method puedeCircularRuta(nivelMaximoPeligrosidad){
+		return !self.estaExcedido() && 
+		self.cosasConMasPeligrosidadQue(nivelMaximoPeligrosidad).isEmpty() 
+	}
+
 }
