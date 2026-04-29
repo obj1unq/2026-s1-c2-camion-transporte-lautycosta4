@@ -442,7 +442,6 @@ describe "transportes"{
 /*
 Para todos los casos, el almacén tiene a Knight Rider y residuos radiactivos.  
 El camión arranca teniendo a Bumblebee en modo auto y arena a granel con 50 kg.
-
 #### Caso: ruta 9 exitoso
 El camión puede transportar sin problemas por la ruta 9 hacia el almacén.  
 En el almacén quedan Knight Rider, residuos radiactivos, Bumblebee y arena a granel.  
